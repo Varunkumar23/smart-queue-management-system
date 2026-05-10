@@ -20,6 +20,22 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleOrganizationNotFoundException(OrganizationNotFoundException ex){
+        return new ResponseEntity<>(
+                new ErrorResponse(false,ex.getMessage(), HttpStatus.NOT_FOUND.value()),
+                HttpStatus.NOT_FOUND
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleOrganizationAlreadyExistsException(OrganizationAlreadyExistsException ex){
+        return new ResponseEntity<>(
+                new ErrorResponse(false,ex.getMessage(), HttpStatus.CONFLICT.value()),
+                HttpStatus.CONFLICT
+        );
+    }
+
+    @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex){
         return new ResponseEntity<>(
                 new ErrorResponse(false,ex.getMessage(), HttpStatus.NOT_FOUND.value()),
