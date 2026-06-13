@@ -17,5 +17,11 @@ public interface OrganizationService {
 
     ApiResponse<OrganizationResponse> updateOrganization(Long id, OrganizationRequest request, String ownerEmail);
 
-    ApiResponse<OrganizationResponse> updateStatus(Long id, OrgStatus status);
+    ApiResponse<OrganizationResponse> updateStatus(Long id, OrgStatus status, String requestorEmail);
+
+    ApiResponse<String> setOrganizationInactive(Long id, String ownerEmail);
+
+    ApiResponse<String> hardDeleteOrganization(Long id, String requestorEmail);
+
+
 }

@@ -20,6 +20,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleUnauthorizedAccessException(UnauthorizedAccessException ex){
+        return new ResponseEntity<>(
+                new ErrorResponse(false,ex.getMessage(), HttpStatus.UNAUTHORIZED.value()),
+                HttpStatus.UNAUTHORIZED
+        );
+    }
+
+    @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleOrganizationNotFoundException(OrganizationNotFoundException ex){
         return new ResponseEntity<>(
                 new ErrorResponse(false,ex.getMessage(), HttpStatus.NOT_FOUND.value()),

@@ -31,16 +31,18 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         String token = header.substring(7);
-        String email = jwtUtil.extractEmail(token);
 
-        if(email != null && SecurityContextHolder.getContext().getAuthentication()==null){
-            UserDetails userDetails=userDetailsService.loadUserByUsername(email);
+        if (jwtUtil.validateToken(token)) {
+            String email = jwtUtil.extractEmail(token);
 
-            if(jwtUtil.validateToken(token)){
-                UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                authenticationToken.setDetails(new org.springframework.security.web.authentication.WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }
-        filterChain.doFilter(request,response);
+        
+        filterChain.doFilter(request, response);
     }
 }
