@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class OrganizationController {
     private final OrganizationService service;
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<OrganizationResponse>> createOrganization(@Valid @RequestBody OrganizationRequest request, java.security.Principal principal){
         ApiResponse<OrganizationResponse> response=service.createOrganization(request, principal.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -41,26 +43,16 @@ public class OrganizationController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<OrganizationResponse>> updateOrganization(@PathVariable Long id, @Valid @RequestBody OrganizationRequest request, java.security.Principal principal){
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    public ResponseEntity<ApiResponse<OrganizationResponse>> updateOrganization(@PathVariable Long id,@RequestBody OrganizationRequest request, java.security.Principal principal){
         ApiResponse<OrganizationResponse> response=service.updateOrganization(id, request, principal.getName());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PatchMapping("/{id}/status")
-    public ResponseEntity<ApiResponse<OrganizationResponse>> updateStatus(@PathVariable Long id, @RequestParam OrgStatus status, java.security.Principal principal){
-        ApiResponse<OrganizationResponse> response=service.updateStatus(id, status, principal.getName());
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    @PatchMapping("/{id}/inactive")
-    public ResponseEntity<ApiResponse<String>> setOrganizationInactive(@PathVariable Long id, java.security.Principal principal){
-        ApiResponse<String> response=service.setOrganizationInactive(id, principal.getName());
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
     @DeleteMapping("/{id}/hard")
-    public ResponseEntity<ApiResponse<String>> hardDeleteOrganization(@PathVariable Long id, java.security.Principal principal){
-        ApiResponse<String> response=service.hardDeleteOrganization(id, principal.getName());
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    public ResponseEntity<ApiResponse<String>> deleteOrganization(@PathVariable Long id, java.security.Principal principal){
+        ApiResponse<String> response=service.deleteOrganization(id, principal.getName());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

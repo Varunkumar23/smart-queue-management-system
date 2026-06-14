@@ -1,7 +1,14 @@
 package com.smartqueue.smart_queue_system.enums;
 
 public enum OrgStatus {
+
+    PENDING,
+
     ACTIVE,
-    INACTIVE,
-    SUSPENDED
+
+    REJECTED,
+
+    SUSPENDED,
+
+    INACTIVE
 }

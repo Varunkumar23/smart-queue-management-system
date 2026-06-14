@@ -39,7 +39,7 @@ public class OrganizationServiceImplementation implements OrganizationService {
 
         Organization organization=modelMapper.map(request,Organization.class);
         organization.setOwner(owner);
-        organization.setStatus(OrgStatus.ACTIVE);
+        organization.setStatus(OrgStatus.PENDING);
         Organization saved = organizationRepository.save(organization);
 
         OrganizationResponse response=modelMapper.map(saved,OrganizationResponse.class);
@@ -47,7 +47,7 @@ public class OrganizationServiceImplementation implements OrganizationService {
 
         return ApiResponse.<OrganizationResponse>builder()
                 .success(true)
-                .message("Organization created successfully")
+                .message("Organization submitted for verification")
                 .data(response)
                 .build();
 
@@ -56,9 +56,6 @@ public class OrganizationServiceImplementation implements OrganizationService {
     @Override
     public ApiResponse<OrganizationResponse> getOrganizationById(Long id) {
         Organization organization=organizationRepository.findById(id).orElseThrow(()->new OrganizationNotFoundException("Organization not found"));
-        if (organization.getStatus() == OrgStatus.INACTIVE) {
-            throw new OrganizationNotFoundException("Organization not found");
-        }
         OrganizationResponse response=modelMapper.map(organization,OrganizationResponse.class);
         response.setOwnerName(organization.getOwner().getName());
 
@@ -75,7 +72,7 @@ public class OrganizationServiceImplementation implements OrganizationService {
     @Override
     public ApiResponse<List<OrganizationResponse>> getAllOrganizations() {
 
-        List<OrganizationResponse> organizations = organizationRepository.findByStatus(OrgStatus.ACTIVE)
+        List<OrganizationResponse> organizations = organizationRepository.findByStatus(OrgStatus.PENDING)
                 .stream()
                 .map(organization -> {
                     OrganizationResponse response = modelMapper.map(organization, OrganizationResponse.class);
@@ -106,9 +103,12 @@ public class OrganizationServiceImplementation implements OrganizationService {
             organization.setType(request.getType());
 
         }
-        if(request.getEmail()!=null){
-            organization.setEmail(request.getEmail());
+        if(request.getEmail()!=null &&
+                !request.getEmail().equals(organization.getEmail()) &&
+                organizationRepository.existsByEmail(request.getEmail())) {
 
+            throw new OrganizationAlreadyExistsException(
+                    "Organization already exists with this email");
         }
         if(request.getPhone()!=null){
             organization.setPhone(request.getPhone());
@@ -135,41 +135,15 @@ public class OrganizationServiceImplementation implements OrganizationService {
 
     }
 
+
     @Override
-    public ApiResponse<OrganizationResponse> updateStatus(Long id, OrgStatus status, String requestorEmail) {
+    public ApiResponse<String> deleteOrganization(Long id, String requestorEmail) {
         Organization organization=organizationRepository.findById(id).orElseThrow(()->new OrganizationNotFoundException("Organization not found"));
         if (!organization.getOwner().getEmail().equals(requestorEmail)) {
-            throw new UnauthorizedAccessException("You are not authorized to update this organization's status");
-        }
-
-        organization.setStatus(status);
-        Organization updated=organizationRepository.save(organization);
-        OrganizationResponse response=modelMapper.map(updated,OrganizationResponse.class);
-        response.setOwnerName(organization.getOwner().getName());
-
-        return ApiResponse.<OrganizationResponse>builder().success(true).message("Organization status updated to " + status).data(response).build();
-    }
-
-    @Override
-    public ApiResponse<String> setOrganizationInactive(Long id, String ownerEmail) {
-        Organization organization=organizationRepository.findById(id).orElseThrow(()->new OrganizationNotFoundException("Organization not found"));
-        if(!organization.getOwner().getEmail().equals(ownerEmail)){
             throw new UnauthorizedAccessException("You are not authorized to delete this organization");
         }
         organization.setStatus(OrgStatus.INACTIVE);
-     organizationRepository.save(organization);
-
-        return ApiResponse.<String>builder().success(true).message("Organization is IN-ACTIVATED successfully").data(null).build();
-
-    }
-
-    @Override
-    public ApiResponse<String> hardDeleteOrganization(Long id, String requestorEmail) {
-        Organization organization=organizationRepository.findById(id).orElseThrow(()->new OrganizationNotFoundException("Organization not found"));
-        if (!organization.getOwner().getEmail().equals(requestorEmail)) {
-            throw new UnauthorizedAccessException("You are not authorized to delete this organization");
-        }
-        organizationRepository.deleteById(id);
+        organizationRepository.save(organization);
         return ApiResponse.<String>builder().success(true).message("Organization deleted successfully").data(null).build();
 
     }

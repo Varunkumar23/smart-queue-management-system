@@ -23,7 +23,7 @@ public class OrganizationRequest {
     private String email;
 
     @NotBlank(message = "Phone is required")
-    @Size(min = 10, message = "Phone number must be between 10 characters exactly")
+    @Size(min = 10, message = "Phone numbermust be between 10 characters exactly")
     private String phone;
 
     @NotBlank(message = "Address is required")
