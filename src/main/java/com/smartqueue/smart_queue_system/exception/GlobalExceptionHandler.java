@@ -11,6 +11,35 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleDuplicateOrgAdminRequestException(DuplicateOrgAdminRequestException ex){
+        return new ResponseEntity<>(
+                new ErrorResponse(false,ex.getMessage(), HttpStatus.BAD_REQUEST.value()),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleInvalidRoleRequestException(InvalidRoleRequestException ex){
+        return new ResponseEntity<>(
+                new ErrorResponse(false,ex.getMessage(), HttpStatus.BAD_REQUEST.value()),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleOrgAdminRequestNotFoundException(OrgAdminRequestNotFoundException ex){
+        return new ResponseEntity<>(
+                new ErrorResponse(false,ex.getMessage(), HttpStatus.NOT_FOUND.value()),
+                HttpStatus.NOT_FOUND
+        );
+    }
+
+
+
+
+
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException ex){
         return new ResponseEntity<>(
@@ -79,6 +108,23 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(
                 new ErrorResponse(false, message, HttpStatus.BAD_REQUEST.value()),
                 HttpStatus.BAD_REQUEST
+        );
+    }
+
+
+    @ExceptionHandler(
+            org.springframework.security.authorization.AuthorizationDeniedException.class)
+    public ResponseEntity<ErrorResponse>
+    handleAuthorizationDeniedException(
+            Exception ex) {
+
+        return new ResponseEntity<>(
+                new ErrorResponse(
+                        false,
+                        "Access Denied",
+                        HttpStatus.FORBIDDEN.value()
+                ),
+                HttpStatus.FORBIDDEN
         );
     }
 }
