@@ -23,21 +23,21 @@ public class OrgAdminRequestController {
     private final OrgAdminRequestService service;
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<ApiResponse<OrgAdminRequestResponse>> submitRequest(@Valid @RequestBody OrgAdminRequestDto request, Principal principal){
         ApiResponse<OrgAdminRequestResponse> response=service.submitRequest(request,principal.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/me")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<ApiResponse<OrgAdminRequestResponse>> getMyRequest(Principal principal){
         ApiResponse<OrgAdminRequestResponse> response=service.getMyRequest(principal.getName());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/pending")
-    @PreAuthorize("hasAnyAuthority('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_SUPERADMIN')")
     public ResponseEntity<ApiResponse<List<OrgAdminRequestResponse>>> getPendingRequests(){
         ApiResponse<List<OrgAdminRequestResponse>> response=service.getPendingRequests();
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -45,7 +45,7 @@ public class OrgAdminRequestController {
     }
 
     @GetMapping("/approved")
-    @PreAuthorize("hasAnyAuthority('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_SUPERADMIN')")
     public ResponseEntity<ApiResponse<List<OrgAdminRequestResponse>>> getApprovedRequests(){
         ApiResponse<List<OrgAdminRequestResponse>> response=service.getApprovedRequests();
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -61,7 +61,7 @@ public class OrgAdminRequestController {
     }
 
     @PatchMapping("/{id}/approve")
-    @PreAuthorize("hasAnyAuthority('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_SUPERADMIN')")
     public ResponseEntity<ApiResponse<String>> approveRequest(@PathVariable Long id){
         ApiResponse<String> response=service.approveRequest(id);
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -69,12 +69,13 @@ public class OrgAdminRequestController {
     }
 
     @PatchMapping("/{id}/reject")
-    @PreAuthorize("hasAnyAuthority('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_SUPERADMIN')")
     public ResponseEntity<ApiResponse<String>> rejectRequest(@PathVariable Long id){
         ApiResponse<String> response=service.rejectRequest(id);
         return ResponseEntity.status(HttpStatus.OK).body(response);
 
     }
+
 
 
 

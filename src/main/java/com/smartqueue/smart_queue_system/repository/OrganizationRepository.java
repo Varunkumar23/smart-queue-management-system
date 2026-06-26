@@ -1,6 +1,7 @@
 package com.smartqueue.smart_queue_system.repository;
 
 import com.smartqueue.smart_queue_system.entity.Organization;
+import com.smartqueue.smart_queue_system.entity.SmartUser;
 import com.smartqueue.smart_queue_system.enums.OrgStatus;
 import com.smartqueue.smart_queue_system.enums.OrgType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,4 +21,6 @@ public interface OrganizationRepository extends JpaRepository<Organization,Long>
     List<Organization> findByType(OrgType type);
 
     List<Organization> findByOwnerId(Long ownerId);
+
+    Optional<Organization> findByOwner(SmartUser owner);
 }
